@@ -1,0 +1,20 @@
+{
+    "name": "app/core",
+    "description": "Erp Core",
+    "type": "plugin",
+    "keywords": [],    
+    "authors": [
+        {
+            "name": "Poravinternet",
+            "email": "mailbox@poravinternet.ru"
+        }
+    ],
+    "require": {
+        
+    },
+    "autoload": {
+        "psr-4": {
+            "\\app\\main\\": ""
+        }
+    }
+}

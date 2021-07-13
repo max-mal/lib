@@ -1,0 +1,56 @@
+# yii console command
+/yii
+
+# phpstorm project files
+.idea
+
+# vscode project files
+.vscode
+
+# netbeans project files
+nbproject
+
+# zend studio for eclipse project files
+.buildpath
+.project
+.settings
+
+# windows thumbnail cache
+Thumbs.db
+
+# composer vendor dir
+/vendor
+
+# node_modules vendor dir
+/node_modules
+
+# composer itself is not needed
+composer.phar
+
+# file to run the composer in windows
+composer.bat
+
+# Mac DS_Store Files
+.DS_Store
+
+# phpunit itself is not needed
+phpunit.phar
+# local phpunit config
+/phpunit.xml
+
+logs
+
+# webpack assets
+assets-catalog.json
+**/webpack/dist/*
+
+
+
+sftp-config.json
+
+
+v8-compile-cache-*
+.phpunit.result.cache
+
+update.log
+.env

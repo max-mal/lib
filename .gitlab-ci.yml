@@ -1,0 +1,37 @@
+image: ubuntu-ssh:latest
+
+before_script:
+
+   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+
+   - eval $(ssh-agent -s)
+
+   ##
+   ## Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+   ## We're using tr to fix line endings which makes ed25519 keys work
+   ## without extra base64 encoding.
+   ## https://gitlab.com/gitlab-examples/ssh-private-key/issues/1#note_48526556
+   ##
+   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+
+   - mkdir -p ~/.ssh
+   - chmod 700 ~/.ssh
+
+deploy:
+  script:
+  # Deploy
+  - ssh -o StrictHostKeyChecking=no root@gitpf.poravinternet.ru "cd /srv/gitpf/www/ && git clean -fd && git reset --hard && git pull && php72 /usr/local/bin/composer install && bash ./migrations.sh && php72 phpDocumentor.phar -d plugins -t web/static/docs >/dev/null 2>/dev/null && rm -rf /srv/gitpf/www/web/static/packages/* && php72 yii core/package/index && chown -R nginx:nginx ."
+  only:
+    - master    
+
+build_image:
+  image: docker:19.03.11
+  stage: build
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+  only:
+    - docker

@@ -1,0 +1,149 @@
+version: '3'
+services:
+
+  #PHP Service
+  app:
+    image: gitlab.poravinternet.ru:4567/connector/gitpf:docker
+    container_name: app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+      CONTAINER_ROLE: app
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - gitpf-network
+
+  scheduler:
+    image: gitlab.poravinternet.ru:4567/connector/gitpf:docker
+    container_name: scheduler
+    restart: unless-stopped
+    tty: true
+    depends_on:
+      - app
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    environment:
+      APP_ENV: local
+      CONTAINER_ROLE: scheduler
+    networks:
+      - gitpf-network
+
+  queue1:
+    image: gitlab.poravinternet.ru:4567/connector/gitpf:docker
+    container_name: queue1
+    restart: unless-stopped
+    tty: true
+    depends_on:
+      - app
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    environment:
+      APP_ENV: local
+      CONTAINER_ROLE: queue
+    networks:
+      - gitpf-network
+
+
+  queue2:
+    image: gitlab.poravinternet.ru:4567/connector/gitpf:docker
+    container_name: queue2
+    restart: unless-stopped
+    tty: true
+    depends_on:
+      - app
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    environment:
+      APP_ENV: local
+      CONTAINER_ROLE: queue
+    networks:
+      - gitpf-network
+
+  queue3:
+    image: gitlab.poravinternet.ru:4567/connector/gitpf:docker
+    container_name: queue3
+    restart: unless-stopped
+    tty: true
+    depends_on:
+      - app
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    environment:
+      APP_ENV: local
+      CONTAINER_ROLE: queue
+    networks:
+      - gitpf-network
+
+
+  queue4:
+    image: gitlab.poravinternet.ru:4567/connector/gitpf:docker
+    container_name: queue4
+    restart: unless-stopped
+    tty: true
+    depends_on:
+      - app
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    environment:
+      APP_ENV: local
+      CONTAINER_ROLE: queue
+    networks:
+      - gitpf-network
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - gitpf-network
+
+  #MySQL Service
+  db:
+    image: mysql:8.0.20
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql      
+    networks:
+      - gitpf-network
+
+#Docker Networks
+networks:
+  gitpf-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local

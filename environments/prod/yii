@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+use yupe\project\Project;
+use yupe\helpers\ArrayHelper;
+use yupe\helpers\FileHelper;
+
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_ENV') or define('YII_ENV', 'dev');
+
+require(__DIR__ . '/vendor/autoload.php');
+require(__DIR__ . '/vendor/yupe/yupe2-platform/Yii.php');
+require(__DIR__ . '/configs/bootstrap.php');
+require(__DIR__ . '/configs/console/bootstrap.php');
+
+$config = ArrayHelper::merge(
+    FileHelper::requireFile(__DIR__ . '/configs/project.php'),
+    FileHelper::requireFile(__DIR__ . '/configs/project-local.php')
+);
+
+$project = new Project($config);
+$exitCode = $project->run('console');
+
+exit($exitCode);
